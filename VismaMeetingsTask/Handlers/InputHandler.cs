@@ -25,6 +25,7 @@ namespace VismaMeetingsTask.Handlers
                     Add();
                     break;
                 case "remove":
+                    Remove();
                     break;
                 case "meetings":
                     break;
@@ -92,6 +93,14 @@ namespace VismaMeetingsTask.Handlers
             Console.WriteLine("Type the date at which he is being added at:");
             var date = DateParse();
             _services.AddPersonToMeeting(name, meeting, date);
+        }
+        public static void Remove()
+        {
+            Console.WriteLine("Please type in the name of the person you want to remove:");
+            var name = Console.ReadLine();
+            Console.WriteLine("Please type in the name of the meeting that you want the person to be removed from:");
+            var meeting = Console.ReadLine();
+            _services.DeletePersonFromMeeting(name, meeting);
         }
         private static string CategorySelect()
         {

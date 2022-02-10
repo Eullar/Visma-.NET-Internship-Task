@@ -32,9 +32,21 @@ namespace VismaMeetingsTask.Services
         {
             if (_repository.GetMeetings().Count().Equals(0))
             {
-                throw new Exception("There are no meetings");
+                throw new Exception("There are no meetings.");
             }
             _repository.AddPersonMeetingToJson(person, meetingName, dateAdded);
+        }
+        public void DeletePersonFromMeeting(string name, string meetingName)
+        {
+            if(name == null)
+            {
+                throw new Exception("Name can not be empty.");
+            }
+            if(meetingName == null)
+            {
+                throw new Exception("Meeting can not be empty.");
+            }
+            _repository.DeletePersonMeetingFromJson(name, meetingName);
         }
     }
 }

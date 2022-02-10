@@ -63,7 +63,7 @@ namespace VismaMeetingsTask.Repositories
                 throw new Exception("Person would be added after the meeting has ended");
             }
             
-            if(peopleInMeetings.Any(m => m.Name == person && m.EndTime > dateAdded && m.StartTime < dateAdded || m.StartTime < meeting.EndTime && m.EndTime > dateAdded))
+            if(peopleInMeetings.Any(m => m.Name == person && m.EndTime > dateAdded && m.StartTime < dateAdded || m.Name == person && m.StartTime < meeting.EndTime && m.EndTime > dateAdded))
             {
                 Console.WriteLine("Person is already in another meeting during the time that you are trying to add him.");
                 if (!ConfirmAction())
@@ -74,7 +74,25 @@ namespace VismaMeetingsTask.Repositories
             peopleInMeetings.Add(new PersonMeetingModel(person, meetingName, dateAdded, meeting.EndTime));
             var jsonString = JsonSerializer.Serialize(peopleInMeetings);
             File.WriteAllText(_personMeetingJson, jsonString);
-
+        }
+        public void DeletePersonMeetingFromJson(string name, string meeting)
+        {
+            var peopleInMeetings = GetPeopleInMeeting();
+            if(peopleInMeetings == null)
+            {
+                throw new Exception("There are no people in any meetings.");
+            }
+            if(!peopleInMeetings.Any(m => m.Name == name && m.Meeting == meeting))
+            {
+                throw new Exception($"Person {name} is not participating in {meeting}.");
+            }
+            else
+            {
+                var specificMeeting = peopleInMeetings.Where(m => m.Name == name && m.Meeting == meeting).FirstOrDefault();
+                peopleInMeetings = peopleInMeetings.Where(m => m != specificMeeting);
+                var jsonString = JsonSerializer.Serialize(peopleInMeetings);
+                File.WriteAllText(_personMeetingJson, jsonString);
+            }
         }
         public IEnumerable<MeetingModel> GetMeetings()
         {
