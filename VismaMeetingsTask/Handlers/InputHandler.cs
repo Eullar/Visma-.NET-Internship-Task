@@ -22,6 +22,7 @@ namespace VismaMeetingsTask.Handlers
                     Delete();
                     break;
                 case "add":
+                    Add();
                     break;
                 case "remove":
                     break;
@@ -82,6 +83,16 @@ namespace VismaMeetingsTask.Handlers
             var meeting = Console.ReadLine();
             _services.DeleteAMeeting(meeting, name);
         }
+        private static void Add()
+        {
+            Console.WriteLine("\r\nType the name of person being added:");
+            var name = Console.ReadLine();
+            Console.WriteLine("Type the meeting in which he is being added to:");
+            var meeting = Console.ReadLine();
+            Console.WriteLine("Type the date at which he is being added at:");
+            var date = DateParse();
+            _services.AddPersonToMeeting(name, meeting, date);
+        }
         private static string CategorySelect()
         {
             Console.WriteLine("1 - CodeMonkey | 2 - Hub | 3 - Short | 4 - TeamBuilding");
@@ -116,7 +127,7 @@ namespace VismaMeetingsTask.Handlers
         }
         private static DateTime DateParse()
         {
-            Console.WriteLine("Input date in the format of Year/Month/Day hh:mm");
+            Console.WriteLine("Input date in the format of Year/Month/Day HH:mm");
             DateTime date = TestDate();
             return date;
         }
@@ -132,7 +143,7 @@ namespace VismaMeetingsTask.Handlers
         }
         private static DateTime TestDate()
         {
-            string pattern = "yyyy/M/dd hh:mm";
+            string pattern = "yyyy/M/dd HH:mm";
             string date = Console.ReadLine();
             DateTime returnDate;
             try
