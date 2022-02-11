@@ -28,6 +28,7 @@ namespace VismaMeetingsTask.Handlers
                     Remove();
                     break;
                 case "meetings":
+                    Meetings();
                     break;
                 case "exit" or "quit":
                     Console.WriteLine("Exiting program.");
@@ -102,7 +103,43 @@ namespace VismaMeetingsTask.Handlers
             var meeting = Console.ReadLine();
             _services.DeletePersonFromMeeting(name, meeting);
         }
-        private static string CategorySelect()
+        public static void Meetings()
+        {
+            Console.WriteLine("Do you want to filter the meetings?");
+            string filter = "none";
+            if (ConfirmAction())
+            {
+                filter = filterSelect();
+            }
+            var meetings = _services.GetMeetings(filter);
+            foreach(var meeting in meetings)
+            {
+                Console.WriteLine(meeting.ToString());
+            }
+        }
+        private static string filterSelect()
+        {
+            Console.WriteLine("1 - By Description | 2 - By Responsible Person | 3 - By Category | 4 - By Type | 5 - By Date | 6 - By Attendee Count");
+            switch (Console.ReadLine().TrimEnd())
+            {
+                case "1":
+                    return "description";
+                case "2":
+                    return "person";
+                case "3":
+                    return "category";
+                case "4":
+                    return "type";
+                case "5":
+                    return "date";
+                case "6":
+                    return "attendees";
+                default:
+                    Console.WriteLine("Please select from the list.");
+                    return filterSelect();
+            }
+        }
+        public static string CategorySelect()
         {
             Console.WriteLine("1 - CodeMonkey | 2 - Hub | 3 - Short | 4 - TeamBuilding");
             switch (Console.ReadLine().TrimEnd())
@@ -120,7 +157,7 @@ namespace VismaMeetingsTask.Handlers
                     return CategorySelect();
             }
         }
-        private static string TypeSelect()
+        public static string TypeSelect()
         {
             Console.WriteLine("1 - Live | 2 - InPerson");
             switch (Console.ReadLine().TrimEnd())
@@ -134,13 +171,13 @@ namespace VismaMeetingsTask.Handlers
                     return TypeSelect();
             }
         }
-        private static DateTime DateParse()
+        public static DateTime DateParse()
         {
             Console.WriteLine("Input date in the format of Year/Month/Day HH:mm");
             DateTime date = TestDate();
             return date;
         }
-        private static DateTime DateParse(DateTime start)
+        public static DateTime DateParse(DateTime start)
         {
             DateTime date = DateParse();
             if (date < start)
@@ -166,6 +203,25 @@ namespace VismaMeetingsTask.Handlers
                 returnDate = TestDate();
             }
             return returnDate;
+        }
+        public static string StringInput(string text)
+        {
+            Console.WriteLine(text);
+            return Console.ReadLine();
+        }
+        public static bool ConfirmAction()
+        {
+            Console.WriteLine("Please type yes or no");
+            switch (Console.ReadLine().ToLower().TrimEnd())
+            {
+                case "yes":
+                    return true;
+                case "no":
+                    return false;
+                default:
+                    Console.WriteLine("Incorrect type of answer.");
+                    return ConfirmAction();
+            }
         }
     }
 }

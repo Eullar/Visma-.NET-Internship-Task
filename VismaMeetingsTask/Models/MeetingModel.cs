@@ -19,5 +19,9 @@
             StartTime = startTime;
             EndTime = endTime;
         }
+        public override string ToString()
+        {
+            return string.Format("|{0,-30}|{1,-30}|{2,-50}|{3,-14}|{4,-9}|{5,-20}|{6,-20}|", Name, ResponsiblePerson, Description, Category, Type, StartTime, EndTime);
+        }
     }
 }

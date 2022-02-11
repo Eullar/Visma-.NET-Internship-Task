@@ -1,5 +1,6 @@
 ﻿using VismaMeetingsTask.Models;
 using VismaMeetingsTask.Interfaces;
+using VismaMeetingsTask.Handlers;
 using System.Text.Json;
 using System.Linq;
 using System;
@@ -66,7 +67,8 @@ namespace VismaMeetingsTask.Repositories
             if(peopleInMeetings.Any(m => m.Name == person && m.EndTime > dateAdded && m.StartTime < dateAdded || m.Name == person && m.StartTime < meeting.EndTime && m.EndTime > dateAdded))
             {
                 Console.WriteLine("Person is already in another meeting during the time that you are trying to add him.");
-                if (!ConfirmAction())
+                Console.WriteLine("Do you want to confirm your action?");
+                if (!InputHandler.ConfirmAction())
                 {
                     return;
                 }
@@ -114,20 +116,9 @@ namespace VismaMeetingsTask.Repositories
             }
             return new List<PersonMeetingModel>();
         }
-        private static bool ConfirmAction()
+        public int PeopleInSpecificMeeting(string meeting)
         {
-            Console.WriteLine("Do you want to confirm your action?");
-            Console.WriteLine("Please type yes or no");
-            switch (Console.ReadLine().ToLower().TrimEnd()) 
-            {
-                case "yes":
-                    return true;
-                case "no":
-                    return false;
-                default:
-                    Console.WriteLine("Incorrect type of answer.");
-                    return ConfirmAction();
-            }
+            return GetPeopleInMeeting().Count(m => m.Meeting == meeting);
         }
     }
 }

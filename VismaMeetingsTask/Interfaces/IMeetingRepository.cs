@@ -8,6 +8,7 @@ namespace VismaMeetingsTask.Interfaces
         void DeleteMeetingFromJson(string model, string person);
         void AddPersonMeetingToJson(string person, string meetingName, DateTime dateAdded);
         void DeletePersonMeetingFromJson(string person, string meetingName);
+        int PeopleInSpecificMeeting(string meeting);
         IEnumerable<MeetingModel> GetMeetings();
         IEnumerable<PersonMeetingModel> GetPeopleInMeeting();
     }
