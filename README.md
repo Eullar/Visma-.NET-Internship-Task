@@ -1,6 +1,9 @@
 # Visma .NET Internship Task
 A coding task gotten while applying for an internship position at Visma
 
+## Opening the solution
+The solution is in /VismaMeetingsTask/VismaMeetingsTask.sln
+With this you can open the project and try out the program.
 ## Task
 Create a console application to manage Visma’s internal meetings using .NET6.
 
