@@ -8,6 +8,6 @@ namespace VismaMeetingsTask.Interfaces
         void DeleteAMeeting(string meeting, string person);
         void AddPersonToMeeting(string person, string meetingName, DateTime dateAdded);
         void DeletePersonFromMeeting(string name, string meetingName);
-        List<MeetingModel> GetMeetings(string filter);
+        List<MeetingModel> GetMeetings(FilterModel filter);
     }
 }

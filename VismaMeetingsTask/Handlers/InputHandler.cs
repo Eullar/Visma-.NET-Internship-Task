@@ -106,34 +106,79 @@ namespace VismaMeetingsTask.Handlers
         public static void Meetings()
         {
             Console.WriteLine("Do you want to filter the meetings?");
-            string filter = "none";
+            FilterType filterType = FilterType.None;
+            FilterModel filter = new(filterType);
             if (ConfirmAction())
             {
-                filter = filterSelect();
+                filterType = filterSelect();
+            }
+            string filterValue;
+            switch (filterType)
+            {
+                case FilterType.Date:
+                    DateTime dateFrom = default;
+                    Console.WriteLine("Do you want to input a beggining date?");
+                    if (InputHandler.ConfirmAction())
+                    {
+                        dateFrom = InputHandler.DateParse();
+                    }
+                    DateTime dateTo = default;
+                    Console.WriteLine("Do you want to input an end date?");
+                    if (InputHandler.ConfirmAction())
+                    {
+                        dateTo = InputHandler.DateParse();
+                    }
+                    filter = new(filterType, dateFrom, dateTo);
+                    break;
+                case FilterType.Category:
+                    filterValue = CategorySelect();
+                    filter = new(filterType, filterValue);
+                    break;
+                case FilterType.Type:
+                    filterValue = TypeSelect();
+                    filter = new(filterType, filterValue);
+                    break;
+                case FilterType.Attendees:
+                    Console.WriteLine("Enter a minimum amount of attendees required in the meeting:");
+                    filterValue = Console.ReadLine();
+                    filter = new(filterType, filterValue);
+                    break;
+                case FilterType.ResponsiblePerson:
+                    Console.WriteLine("Enter responsible person for the  meeting:");
+                    filterValue = Console.ReadLine();
+                    filter = new(filterType, filterValue);
+                    break;
+                case FilterType.Description:
+                    Console.WriteLine("Enter the description of the meeting:");
+                    filterValue = Console.ReadLine();
+                    filter = new(filterType, filterValue);
+                    break;
+                default:
+                    break;
             }
             var meetings = _services.GetMeetings(filter);
-            foreach(var meeting in meetings)
+            foreach (var meeting in meetings)
             {
                 Console.WriteLine(meeting.ToString());
             }
         }
-        private static string filterSelect()
+        private static FilterType filterSelect()
         {
             Console.WriteLine("1 - By Description | 2 - By Responsible Person | 3 - By Category | 4 - By Type | 5 - By Date | 6 - By Attendee Count");
             switch (Console.ReadLine().TrimEnd())
             {
                 case "1":
-                    return "description";
+                    return FilterType.Description;
                 case "2":
-                    return "person";
+                    return FilterType.ResponsiblePerson;
                 case "3":
-                    return "category";
+                    return FilterType.Category;
                 case "4":
-                    return "type";
+                    return FilterType.Type;
                 case "5":
-                    return "date";
+                    return FilterType.Date;
                 case "6":
-                    return "attendees";
+                    return FilterType.Attendees;
                 default:
                     Console.WriteLine("Please select from the list.");
                     return filterSelect();
@@ -189,12 +234,11 @@ namespace VismaMeetingsTask.Handlers
         }
         private static DateTime TestDate()
         {
-            string pattern = "yyyy/M/dd HH:mm";
             string date = Console.ReadLine();
             DateTime returnDate;
             try
             {
-                returnDate = DateTime.ParseExact(date, pattern, null);
+                returnDate = DateTime.ParseExact(date, "yyyy/M/dd HH:mm", null);
             }
             catch (Exception ex)
             {

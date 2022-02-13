@@ -1,6 +1,4 @@
-﻿
-
-namespace VismaMeetingsTask.Models
+﻿namespace VismaMeetingsTask.Models
 {
     public class PersonMeetingModel
     {

@@ -1,16 +1,15 @@
 ﻿using VismaMeetingsTask.Models;
 using VismaMeetingsTask.Interfaces;
 using VismaMeetingsTask.Repositories;
-using VismaMeetingsTask.Handlers;
 
 namespace VismaMeetingsTask.Services
 {
     public class MeetingServices : IMeetingServices
     {
         private IMeetingRepository _repository;
-        public MeetingServices()
+        public MeetingServices(IMeetingRepository repo = null)
         {
-            _repository = new MeetingRepository();
+            _repository = repo ??= new MeetingRepository();
         }
         public string CreateAMeeting(MeetingModel meeting)
         {
@@ -49,41 +48,31 @@ namespace VismaMeetingsTask.Services
             }
             _repository.DeletePersonMeetingFromJson(name, meetingName);
         }
-        public List<MeetingModel> GetMeetings(string filter)
+        public List<MeetingModel> GetMeetings(FilterModel filter)
         {
             var meetings = _repository.GetMeetings();
-            switch (filter.ToLower().TrimEnd())
+            switch (filter.Type)
             {
-                case "description":
-                    var description = InputHandler.StringInput("Please type in part of the desciption:");
-                    return meetings.Where(m => m.Description.Contains(description)).ToList();
-                case "person":
-                    var person = InputHandler.StringInput("Please type in the responsible person for the meeting:");
-                    return meetings.Where(m => m.ResponsiblePerson.Equals(person)).ToList();
-                case "category":
-                    var category = InputHandler.CategorySelect();
-                    return meetings.Where(m => m.Category.Equals(category)).ToList();
-                case "type":
-                    var type = InputHandler.TypeSelect();
-                    return meetings.Where(m => m.Type.Equals(type)).ToList();
-                case "date":
-                    DateTime time;
-                    Console.WriteLine("Do you want to input a beggining date?");
-                    if (InputHandler.ConfirmAction())
+                case FilterType.Description:
+                    return meetings.Where(m => m.Description.Contains(filter.Value)).ToList();
+                case FilterType.Date:
+                    if (filter.DateFrom != default)
                     {
-                        time = InputHandler.DateParse();
-                        meetings = meetings.Where(m => m.StartTime >= time);
+                        meetings = meetings.Where(m => m.StartTime >= filter.DateFrom);
                     }
-                    Console.WriteLine("Do you want to input an end date?");
-                    if (InputHandler.ConfirmAction())
+                    if (filter.DateTo != default)
                     {
-                        time = InputHandler.DateParse();
-                        meetings = meetings.Where(m => m.EndTime <= time);
+                        meetings = meetings.Where(m => m.EndTime <= filter.DateTo);
                     }
                     return meetings.ToList();
-                case "attendees":
-                    var amount = int.Parse(InputHandler.StringInput("Type in the least amount of attendees that the meeting must have:"));
-                    return meetings.Where(m => _repository.PeopleInSpecificMeeting(m.Name) >= amount).ToList();
+                case FilterType.Attendees:
+                    return meetings.Where(m => _repository.PeopleInSpecificMeeting(m.Name) >= int.Parse(filter.Value)).ToList();
+                case FilterType.ResponsiblePerson:
+                    return meetings.Where(m => m.ResponsiblePerson.Equals(filter.Value)).ToList();
+                case FilterType.Category:
+                    return meetings.Where(m => m.Category.Equals(filter.Value)).ToList();
+                case FilterType.Type:
+                    return meetings.Where(m => m.Type.Equals(filter.Value)).ToList();
                 default:
                     return meetings.ToList();
             }

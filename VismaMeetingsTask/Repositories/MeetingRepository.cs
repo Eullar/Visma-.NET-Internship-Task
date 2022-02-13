@@ -2,8 +2,6 @@
 using VismaMeetingsTask.Interfaces;
 using VismaMeetingsTask.Handlers;
 using System.Text.Json;
-using System.Linq;
-using System;
 
 namespace VismaMeetingsTask.Repositories
 {
@@ -24,6 +22,7 @@ namespace VismaMeetingsTask.Repositories
             meetings.Add(meeting);
             var jsonString = JsonSerializer.Serialize(meetings);
             File.WriteAllText(_meetingsJson, jsonString);
+            AddPersonMeetingToJson(meeting.ResponsiblePerson, meeting.Name, meeting.StartTime);
             return meeting.Name;
         }
         public void DeleteMeetingFromJson(string model, string person)
@@ -41,6 +40,7 @@ namespace VismaMeetingsTask.Repositories
             meetings = meetings.Where(m => m.Name != model);
             var jsonString = JsonSerializer.Serialize(meetings);
             File.WriteAllText(_meetingsJson,jsonString);
+            DeleteAllPeopleFromMeeting(model);
         }
         public void AddPersonMeetingToJson(string person, string meetingName, DateTime dateAdded)
         {
@@ -95,6 +95,21 @@ namespace VismaMeetingsTask.Repositories
                 var jsonString = JsonSerializer.Serialize(peopleInMeetings);
                 File.WriteAllText(_personMeetingJson, jsonString);
             }
+        }
+        public void DeleteAllPeopleFromMeeting(string meeting)
+        {
+            var peopleInMeetings = GetPeopleInMeeting();
+            if(peopleInMeetings == null)
+            {
+                throw new Exception("There are no people in any meetings");
+            }
+            if(!peopleInMeetings.Any(m => m.Meeting == meeting))
+            {
+                throw new Exception($"There are no people in {meeting} meeting");
+            }
+            peopleInMeetings = peopleInMeetings.Where(m => m.Meeting != meeting);
+            var jsonString = JsonSerializer.Serialize(peopleInMeetings);
+            File.WriteAllText(_personMeetingJson, jsonString);
         }
         public IEnumerable<MeetingModel> GetMeetings()
         {
